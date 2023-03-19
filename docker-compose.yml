@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    platform: linux/amd64
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  mailer-service:
+    build:
+      dockerfile: mail-service.dockerfile
+    platform: linux/amd64
+    deploy:
+      mode: replicated
+      replicas: 1    
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mailhog
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: none
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      FROM_NAME: "Playlist Subscription"
+      FROM_ADDRESS: "playlist@example.com"
